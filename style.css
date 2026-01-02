@@ -1,0 +1,52 @@
+// Debugged Battery Status Script
+
+window.onload = () => {
+
+  // Check browser support
+  if (!navigator.getBattery) {
+    alert("⚠️ Battery Status API is NOT supported in this browser.");
+    return;
+  }
+
+  navigator.getBattery().then((battery) => {
+
+    // Call all functions when page loads
+    updateAllBatteryInfo();
+
+    // Listen for changes in battery status
+    battery.addEventListener("levelchange", updateAllBatteryInfo);
+    battery.addEventListener("chargingchange", updateAllBatteryInfo);
+
+    // ---- Functions ----
+
+    function updateAllBatteryInfo() {
+      updateLevel();
+      updateChargingInfo();
+    }
+
+    // Update battery percentage & bar width
+    function updateLevel() {
+      const level = Math.floor(battery.level * 100);
+      const chargeLevel = document.getElementById("charge-level");
+      const chargeBar = document.getElementById("charge");
+
+      chargeLevel.innerText = level + "%";
+      chargeBar.style.width = (level * 0.1625) + "em"; // FIXED
+    }
+
+    // Update charging status text + animation
+    function updateChargingInfo() {
+      const chargeBar = document.getElementById("charge");
+      const chargeTime = document.getElementById("charging-time");
+
+      if (battery.charging) {
+        chargeBar.classList.add("active");
+        chargeTime.innerText = "⚡ Charging...";
+      } else {
+        chargeBar.classList.remove("active");
+        chargeTime.innerText = "🔋 Not Charging";
+      }
+    }
+
+  });
+};
